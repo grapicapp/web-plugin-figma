@@ -3,16 +3,14 @@ import * as figmaUtils from "./figmaUtils";
 const { widget } = figma;
 const { AutoLayout, Text, Image, useEffect, useSyncedState } = widget;
 
-// const IFRAME_URL = "https://staging.app.grapic.co";
-// const IFRAME_URL = "http://localhost:3000/";
-// const IFRAME_URL = "http://localhost:3000/miro";
-// const IFRAME_URL = "http://localhost:3000/embed/txuYyrodm34RKXXtVvY4qz";
-// const IFRAME_URL = "http://localhost:3000/new";
-const IFRAME_URL =
-  "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/new";
+// const IFRAME_BASE_URL = "https://staging.app.grapic.co";
+// const IFRAME_BASE_URL = "http://localhost:3000/";
+const IFRAME_BASE_URL =
+  "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 function Widget() {
-  const [image, setImage] = useSyncedState("image", "");
+  const [roomId, setRoomId] = useSyncedState("roomId", null);
+  const [image, setImage] = useSyncedState("image", null);
   const [numberOfSnapshots, setNumberOfSnapshots] = useSyncedState(
     "numberOfSnapshots",
     0
@@ -27,6 +25,13 @@ function Widget() {
       }
       if (msg === "close") {
         figma.closePlugin();
+      }
+      if (typeof msg === "object" && msg.type === "room") {
+        const message = msg as {
+          type: "room";
+          roomId: string;
+        };
+        setRoomId(message.roomId);
       }
       if (typeof msg === "object" && msg.type === "image") {
         const message = msg as {
@@ -66,7 +71,9 @@ function Widget() {
       // () => new Promise((resolve) => {figma.showUI(__html__);})
       onClick={async () => {
         await new Promise((resolve) => {
-          const ui = `<script>window.location.href="${IFRAME_URL}"</script>`;
+          const url = IFRAME_BASE_URL + (roomId ? `embed/${roomId}` : "new");
+          console.log("Opening URL", url);
+          const ui = `<script>window.location.href="${url}"</script>`;
           figma.showUI(ui, { width: 600, height: 600 });
           // figma.ui.on("message", (msg) => { could also be here...
         });
