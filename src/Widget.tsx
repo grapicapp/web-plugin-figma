@@ -39,7 +39,7 @@ function Widget() {
           width: number;
           height: number;
         };
-        if (images.find((image) => image === message.id)) {
+        if (images.includes(message.id)) {
           console.log("Image", message.id, "already on board");
           return;
         }

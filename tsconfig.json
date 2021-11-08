@@ -3,7 +3,7 @@
     "jsx": "react",
     "jsxFactory": "figma.widget.h",
     "target": "es6",
-    "lib": ["es6"],
+    "lib": ["es2021"],
     "typeRoots": ["./node_modules/@types", "./node_modules/@figma"]
   }
 }
