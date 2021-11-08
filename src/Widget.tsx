@@ -9,12 +9,9 @@ const IFRAME_BASE_URL =
   "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 function Widget() {
-  const [roomId, setRoomId] = useSyncedState("roomId", null);
-  const [image, setImage] = useSyncedState("image", null);
-  const [numberOfSnapshots, setNumberOfSnapshots] = useSyncedState(
-    "numberOfSnapshots",
-    0
-  );
+  const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
+  const [image, setImage] = useSyncedState<string | null>("image", null);
+  const [images, setImages] = useSyncedState<string[]>("images", []);
 
   useEffect(() => {
     figma.ui.onmessage = (msg) => {
@@ -42,15 +39,20 @@ function Widget() {
           width: number;
           height: number;
         };
+        if (images.find((image) => image === message.id)) {
+          console.log("Image", message.id, "already on board");
+          return;
+        }
+
         setImage(message.url);
         figmaUtils.createImage({
           id: message.id,
           imageData: message.bytes,
           width: message.width,
           height: message.height,
-          position: numberOfSnapshots,
+          position: images.length,
         });
-        setNumberOfSnapshots(numberOfSnapshots + 1);
+        setImages([message.id, ...images]);
       }
     };
   });
