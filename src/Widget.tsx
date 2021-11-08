@@ -13,6 +13,10 @@ const IFRAME_URL =
 
 function Widget() {
   const [image, setImage] = useSyncedState("image", "");
+  const [numberOfSnapshots, setNumberOfSnapshots] = useSyncedState(
+    "numberOfSnapshots",
+    0
+  );
 
   useEffect(() => {
     figma.ui.onmessage = (msg) => {
@@ -39,7 +43,9 @@ function Widget() {
           imageData: message.bytes,
           width: message.width,
           height: message.height,
+          position: numberOfSnapshots,
         });
+        setNumberOfSnapshots(numberOfSnapshots + 1);
       }
     };
   });

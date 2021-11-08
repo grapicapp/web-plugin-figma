@@ -7,28 +7,25 @@ export const createImage = ({
   imageData,
   width,
   height,
+  position,
 }: {
   id: string;
   imageData: Uint8Array;
   width?: number;
   height?: number;
+  position: number;
 }) => {
   const image = figma.createImage(imageData);
-  console.log("Created Figma image", image);
+  console.log(`Created Figma image (${id})`, image);
 
   const rectangle = figma.createRectangle();
   if (id) rectangle.setPluginData("id", id);
-  if (width && height) {
-    rectangle.resize(width, height);
-  }
+  if (width && height) rectangle.resize(width, height);
 
-  console.log("Rectangle id", rectangle.getPluginData("id"));
+  rectangle.x += position * 50;
+  rectangle.y += position * 50;
 
-  // console.log("Rectangle x before", rectangle.x);
-  // rectangle.x += 100;
-  // console.log("Rectangle x after", rectangle.x);
-
-  console.log("Created Figma rectangle", rectangle);
+  console.log(`Created Figma rectangle (${id})`, rectangle);
   // for (const paint of rectangle.fills) {
   //   console.log("paint", paint)
   // }
@@ -45,5 +42,5 @@ export const createImage = ({
   // fills[0].color.r = 0.5
 
   rectangle.fills = newFills;
-  console.log("Filled rectangle with image", rectangle.fills);
+  // console.log(`Filled rectangle (${id}) with image`, rectangle.fills);
 };
