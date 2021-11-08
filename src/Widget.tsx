@@ -9,6 +9,7 @@ const IFRAME_BASE_URL =
   "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 function Widget() {
+  const widgetId = widget.useWidgetId();
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
   const [image, setImage] = useSyncedState<string | null>("image", null);
   const [images, setImages] = useSyncedState<string[]>("images", []);
@@ -44,6 +45,7 @@ function Widget() {
           return;
         }
 
+        const widget = figma.getNodeById(widgetId) as WidgetNode;
         setImage(message.url);
         figmaUtils.createImage({
           id: message.id,
@@ -51,6 +53,7 @@ function Widget() {
           width: message.width,
           height: message.height,
           position: images.length,
+          widget,
         });
         setImages([message.id, ...images]);
       }

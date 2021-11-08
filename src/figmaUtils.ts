@@ -8,22 +8,24 @@ export const createImage = ({
   width,
   height,
   position,
+  widget,
 }: {
   id: string;
   imageData: Uint8Array;
   width?: number;
   height?: number;
   position: number;
+  widget: WidgetNode;
 }) => {
   const image = figma.createImage(imageData);
   console.log(`Created Figma image (${id})`, image);
 
   const rectangle = figma.createRectangle();
+  rectangle.x = widget.x - 1000 + position * 50;
+  rectangle.y = widget.y + position * 50;
+
   if (id) rectangle.setPluginData("id", id);
   if (width && height) rectangle.resize(width, height);
-
-  rectangle.x += position * 50;
-  rectangle.y += position * 50;
 
   console.log(`Created Figma rectangle (${id})`, rectangle);
   // for (const paint of rectangle.fills) {
