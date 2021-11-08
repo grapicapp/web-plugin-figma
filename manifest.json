@@ -1,0 +1,10 @@
+{
+  "name": "Grapic for Figma",
+  "id": "1038086438446539988",
+  "api": "1.0.0",
+  "main": "build/widget.js",
+  "editorType": ["figjam"],
+  "permissions": ["currentuser"],
+  "containsWidget": true,
+  "widgetApi": "1.0.0"
+}
