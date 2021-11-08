@@ -25,11 +25,20 @@ function Widget() {
         figma.closePlugin();
       }
       if (typeof msg === "object" && msg.type === "image") {
-        setImage(msg.url);
+        const message = msg as {
+          type: "image";
+          id: string;
+          bytes: Uint8Array;
+          url: string;
+          width: number;
+          height: number;
+        };
+        setImage(message.url);
         figmaUtils.createImage({
-          imageData: msg.bytes,
-          width: msg.width,
-          height: msg.height,
+          id: message.id,
+          imageData: message.bytes,
+          width: message.width,
+          height: message.height,
         });
       }
     };
