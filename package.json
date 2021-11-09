@@ -8,7 +8,9 @@
   "scripts": {
     "build": "esbuild src/Widget.tsx --bundle --outfile=build/widget.js",
     "build:production": "yarn run build --minify",
-    "start": "yarn run build --watch"
+    "start": "yarn run build --watch",
+    "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "format:write": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.37.0",
