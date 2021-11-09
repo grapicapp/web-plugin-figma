@@ -1,4 +1,19 @@
-export interface ImageMessage {
+export type FigmaMessage =
+  | FigmaActionMessage
+  | FigmaImageMessage
+  | FigmaNotificationMessage
+  | FigmaRoomMessage;
+
+export interface FigmaActionMessage {
+  type: "action";
+  message: "close";
+}
+export interface FigmaNotificationMessage {
+  type: "notification";
+  message: string;
+}
+
+export interface FigmaImageMessage {
   type: "image";
   id: string;
   bytes: Uint8Array;
@@ -7,7 +22,7 @@ export interface ImageMessage {
   height: number;
 }
 
-export interface RoomMessage {
+export interface FigmaRoomMessage {
   type: "room";
   roomId: string;
 }

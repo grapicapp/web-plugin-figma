@@ -16,34 +16,32 @@ function Widget() {
   const [images, setImages] = useSyncedState<string[]>("images", []);
 
   useEffect(() => {
-    figma.ui.onmessage = (msg) => {
-      // or figma.ui.on("message", (msg) => {
-      console.log("Message from UI:", msg);
-      if (msg === "hello") {
-        figma.notify(`Hello ${figma.currentUser.name}`);
+    figma.ui.onmessage = (message: types.FigmaMessage) => {
+      // or figma.ui.on("message", (message) => {
+      console.log("Message from UI:", message);
+      if (message.type === "notification") {
+        figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
       }
-      if (msg === "close") {
+      if (message.type === "action") {
         figma.closePlugin();
       }
-      if (typeof msg === "object" && msg.type === "room") {
-        const message = msg as types.RoomMessage;
+      if (message.type === "room") {
         setRoomId(message.roomId);
       }
-      if (typeof msg === "object" && msg.type === "image") {
-        const imageMessage = msg as types.ImageMessage;
-        if (images.includes(imageMessage.id)) {
-          console.log("Image", imageMessage.id, "already on board");
+      if (message.type === "image") {
+        if (images.includes(message.id)) {
+          console.log("Image", message.id, "already on board");
           return;
         }
 
         const widget = figma.getNodeById(widgetId) as WidgetNode;
-        setImage(imageMessage.url);
+        setImage(message.url);
         figmaUtils.createImage({
-          imageMessage,
+          imageMessage: message,
           position: images.length,
           widget,
         });
-        setImages([imageMessage.id, ...images]);
+        setImages([message.id, ...images]);
       }
     };
   });

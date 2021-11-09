@@ -9,7 +9,7 @@ export const createImage = ({
   position,
   widget,
 }: {
-  imageMessage: types.ImageMessage;
+  imageMessage: types.FigmaImageMessage;
   position: number;
   widget: WidgetNode;
 }) => {
