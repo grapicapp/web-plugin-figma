@@ -1,4 +1,5 @@
 import * as figmaUtils from "./figmaUtils";
+import * as types from "./types";
 
 const { widget } = figma;
 const { AutoLayout, Text, Image, useEffect, useSyncedState } = widget;
@@ -25,37 +26,24 @@ function Widget() {
         figma.closePlugin();
       }
       if (typeof msg === "object" && msg.type === "room") {
-        const message = msg as {
-          type: "room";
-          roomId: string;
-        };
+        const message = msg as types.RoomMessage;
         setRoomId(message.roomId);
       }
       if (typeof msg === "object" && msg.type === "image") {
-        const message = msg as {
-          type: "image";
-          id: string;
-          bytes: Uint8Array;
-          url: string;
-          width: number;
-          height: number;
-        };
-        if (images.includes(message.id)) {
-          console.log("Image", message.id, "already on board");
+        const imageMessage = msg as types.ImageMessage;
+        if (images.includes(imageMessage.id)) {
+          console.log("Image", imageMessage.id, "already on board");
           return;
         }
 
         const widget = figma.getNodeById(widgetId) as WidgetNode;
-        setImage(message.url);
+        setImage(imageMessage.url);
         figmaUtils.createImage({
-          id: message.id,
-          imageData: message.bytes,
-          width: message.width,
-          height: message.height,
+          imageMessage,
           position: images.length,
           widget,
         });
-        setImages([message.id, ...images]);
+        setImages([imageMessage.id, ...images]);
       }
     };
   });
@@ -96,9 +84,9 @@ function Widget() {
         </Text>
       )}
 
-      {!!image && (
+      {!!roomId && (
         <Text fontSize={12} horizontalAlignText="center">
-          Latest snapshot
+          {!!image ? "Latest snapshot" : "No snapshot yet"}
         </Text>
       )}
 
