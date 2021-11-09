@@ -1,5 +1,7 @@
 import * as types from "./types";
 
+export const remToPx = (rem: number) => rem * 16;
+
 export function clone<Type>(value: Type): Type {
   return JSON.parse(JSON.stringify(value));
 }

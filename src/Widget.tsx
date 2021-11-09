@@ -1,16 +1,19 @@
+import * as colors from "./colors";
 import * as figmaUtils from "./figmaUtils";
 import * as types from "./types";
 
 const { widget } = figma;
 const { AutoLayout, Text, Image, useEffect, useSyncedState } = widget;
 
-// const IFRAME_BASE_URL = "https://staging.app.grapic.co";
+// const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
 // const IFRAME_BASE_URL = "http://localhost:3000/";
 const IFRAME_BASE_URL =
   "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 function Widget() {
   const widgetId = widget.useWidgetId();
+  // TODO: think about the naming here before launch because they are not backward comp.
+  const [opened, setOpened] = useSyncedState<boolean>("opened", false);
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
   const [image, setImage] = useSyncedState<string | null>("image", null);
   const [images, setImages] = useSyncedState<string[]>("images", []);
@@ -52,10 +55,15 @@ function Widget() {
       horizontalAlignItems="center"
       verticalAlignItems="center"
       height="hug-contents"
-      padding={10}
-      fill="#FFFFFF"
-      cornerRadius={8}
-      spacing={12}
+      padding={{
+        top: figmaUtils.remToPx(0.8),
+        bottom: figmaUtils.remToPx(0.8),
+        left: figmaUtils.remToPx(1.5),
+        right: figmaUtils.remToPx(1.5),
+      }}
+      fill={colors.LIGHT_BACKGROUND}
+      cornerRadius={figmaUtils.remToPx(1.8)}
+      spacing={6}
       // Use async callbacks or return a promise to keep the Iframe window
       // opened. Resolving the promise, closing the Iframe window, or calling
       // "figma.closePlugin()" will terminate the code.
@@ -66,29 +74,50 @@ function Widget() {
           console.log("Opening URL", url);
           const ui = `<script>window.location.href="${url}"</script>`;
           figma.showUI(ui, { width: 600, height: 600 });
+          setOpened(true);
           // figma.ui.on("message", (msg) => { could also be here...
         });
       }}
     >
-      {!image && (
-        <Text fontSize={32} horizontalAlignText="center">
-          New Grapic
+      <Text
+        fontSize={32}
+        horizontalAlignText="center"
+        fill={colors.GRAPIC_BLACK}
+      >
+        {!!roomId ? "Grapic" : opened ? "Creating Grapic..." : "New Grapic"}
+      </Text>
+
+      {!!roomId && (
+        <Text
+          fontSize={10}
+          horizontalAlignText="center"
+          fill={colors.GRAPIC_BLACK}
+        >
+          Room: {roomId}
         </Text>
       )}
 
-      {!!image && (
-        <Text fontSize={20} horizontalAlignText="center">
-          Grapic
+      {!!images && (
+        <Text
+          fontSize={10}
+          horizontalAlignText="center"
+          fill={colors.GRAPIC_BLACK}
+        >
+          Snapshots: {images.length}
         </Text>
       )}
 
       {!!roomId && (
-        <Text fontSize={12} horizontalAlignText="center">
+        <Text
+          fontSize={12}
+          horizontalAlignText="center"
+          fill={colors.GRAPIC_BLACK}
+        >
           {!!image ? "Latest snapshot" : "No snapshot yet"}
         </Text>
       )}
 
-      {!!image && <Image src={image} width={400} height={400} />}
+      {!!image && <Image src={image} width={300} height={300} />}
     </AutoLayout>
   );
 }
