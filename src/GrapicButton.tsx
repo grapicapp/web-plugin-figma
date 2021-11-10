@@ -14,7 +14,7 @@ const GrapicButton = (props: { text: string; onClick?: () => void }) => {
         left: figmaUtils.remToPx(1.5),
         right: figmaUtils.remToPx(1.5),
       }}
-      cornerRadius={figmaUtils.remToPx(0.8)}
+      cornerRadius={figmaUtils.remToPx(0.6)}
       onClick={props.onClick}
     >
       <Text

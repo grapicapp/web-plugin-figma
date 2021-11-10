@@ -20,6 +20,7 @@ export interface FigmaImageMessage {
   url: string;
   width: number;
   height: number;
+  createdAtMs: number;
 }
 
 export interface FigmaRoomMessage {

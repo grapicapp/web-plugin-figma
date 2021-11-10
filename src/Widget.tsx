@@ -17,8 +17,9 @@ function Widget() {
   // TODO: think about the naming here before launch because they are not backward comp.
   const [opened, setOpened] = useSyncedState<boolean>("opened", false);
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
-  const [imageIds, setImageIds] = useSyncedState<string[]>("imageIds", []);
-  const [imageUrls, setImageUrls] = useSyncedState<string[]>("imageUrls", []);
+  const [snapshots, setSnapshots] = useSyncedState<{
+    [imageId: string]: { id: string; createdAtMs: number; url: string };
+  }>("snapshots", {});
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage) => {
@@ -35,22 +36,29 @@ function Widget() {
         setRoomId(message.roomId);
       }
       if (message.type === "image") {
-        if (imageIds.includes(message.id)) {
-          console.log("Image", message.id, "already on board");
+        const { id, createdAtMs, url } = message;
+        if (!!snapshots[id]) {
+          console.log(`Image ${id} already on board`);
           return;
         }
-        figma.notify(`Adding image on board (${imageIds.length + 1})`);
+        const position = Object.keys(snapshots).length;
+        setSnapshots({ [id]: { id, createdAtMs, url }, ...snapshots });
         const widget = figma.getNodeById(widgetId) as WidgetNode;
         figmaUtils.createImage({
           imageMessage: message,
-          position: imageIds.length,
+          position,
           widget,
         });
-        setImageIds([message.id, ...imageIds]);
-        setImageUrls([message.url, ...imageUrls]);
+        figma.notify(
+          `Adding image on board (${new Date(
+            createdAtMs
+          ).toLocaleTimeString()})`
+        );
       }
     };
   });
+
+  const snapshotArray = Object.values(snapshots);
 
   return (
     <AutoLayout
@@ -58,14 +66,9 @@ function Widget() {
       horizontalAlignItems="start"
       verticalAlignItems="center"
       height="hug-contents"
-      padding={{
-        top: figmaUtils.remToPx(0.8),
-        bottom: figmaUtils.remToPx(0.8),
-        left: figmaUtils.remToPx(1.5),
-        right: figmaUtils.remToPx(1.5),
-      }}
+      padding={figmaUtils.remToPx(0.8)}
       fill={colors.LIGHT_BACKGROUND}
-      cornerRadius={figmaUtils.remToPx(1.8)}
+      cornerRadius={figmaUtils.remToPx(1)}
       spacing={6}
     >
       <AutoLayout>
@@ -82,7 +85,7 @@ function Widget() {
       </AutoLayout>
 
       <AutoLayout direction="vertical" horizontalAlignItems="center">
-        <AutoLayout padding={{ top: 10 }}>
+        <AutoLayout padding={{ top: 15 }}>
           <GrapicButton
             text="Start Grapic"
             // Use async callbacks or return a promise to keep the Iframe window
@@ -103,25 +106,27 @@ function Widget() {
           />
         </AutoLayout>
 
-        <AutoLayout padding={{ top: 10 }}>
+        <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
           <Text
-            fontSize={14}
+            fontSize={12}
             fontWeight={400}
             horizontalAlignText="center"
             fill={colors.GRAPIC_BLACK}
           >
             {!!roomId
-              ? "Follow the instructions in the popup"
+              ? "Sketch on paper or whiteboard and\nget it directly into Figma"
               : opened
               ? "Creating your Grapic..."
-              : "Sketch on paper or whiteboard and\nget it directly in Figma"}
+              : "Sketch on paper or whiteboard and\nget it directly into Figma"}
           </Text>
         </AutoLayout>
 
-        {!!roomId && imageUrls.length === 0 && (
-          <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
+        {!!roomId && snapshotArray.length === 0 && (
+          <AutoLayout padding={{ top: 15, bottom: 15 }} spacing={10}>
             {!!roomId && (
-              <SVG src={images.snapshotButton} width={20} height={20} />
+              <AutoLayout padding={{ top: 3 }}>
+                <SVG src={images.snapshotButton} width={18} height={18} />
+              </AutoLayout>
             )}
             <Text
               fontSize={10}
@@ -135,24 +140,24 @@ function Widget() {
           </AutoLayout>
         )}
 
-        {imageUrls.length > 0 && (
+        {snapshotArray.length > 0 && (
           <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
-            {imageUrls
-              .reverse()
+            {snapshotArray
+              .sort((a, b) => a.createdAtMs - b.createdAtMs)
               .slice(3 * -1)
-              .map((imageUrl) => (
+              .map((image) => (
                 <Image
-                  key={imageUrl}
-                  src={imageUrl}
+                  key={image.id}
+                  name={new Date(image.createdAtMs).toLocaleString()}
+                  src={image.url}
                   width={80}
                   height={80}
-                  name={imageUrl}
                   cornerRadius={6}
                 />
               ))}
-            {imageUrls.length > 3 && (
+            {snapshotArray.length > 3 && (
               <AutoLayout verticalAlignItems="center" height="fill-parent">
-                <Text fontSize={12}>{`+${imageUrls.length - 3}`}</Text>
+                <Text fontSize={12}>{`+${snapshotArray.length - 3}`}</Text>
               </AutoLayout>
             )}
           </AutoLayout>
