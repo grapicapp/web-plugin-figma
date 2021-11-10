@@ -18,8 +18,9 @@ const GrapicButton = (props: { text: string; onClick?: () => void }) => {
       onClick={props.onClick}
     >
       <Text
+        fontFamily="Poppins"
         fontSize={16}
-        fontWeight={600}
+        fontWeight={700}
         horizontalAlignText="center"
         fill={colors.GRAPIC_BLACK}
       >

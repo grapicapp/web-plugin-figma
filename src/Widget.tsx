@@ -78,7 +78,12 @@ function Widget() {
           height={26 * (90 / 110)}
         />
         <AutoLayout padding={{ top: 1, left: 7 }}>
-          <Text fontSize={16} fontWeight={800} fill={colors.GRAPIC_BLACK}>
+          <Text
+            fontFamily="Poppins"
+            fontSize={16}
+            fontWeight={700}
+            fill={colors.GRAPIC_BLACK}
+          >
             Grapic
           </Text>
         </AutoLayout>
@@ -108,6 +113,7 @@ function Widget() {
 
         <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
           <Text
+            fontFamily="Open Sans"
             fontSize={12}
             fontWeight={400}
             horizontalAlignText="center"
@@ -129,9 +135,11 @@ function Widget() {
               </AutoLayout>
             )}
             <Text
+              fontFamily="Open Sans"
               fontSize={10}
+              fontWeight={400}
               fill={colors.GRAPIC_BLACK}
-              fontWeight={300}
+              opacity={0.5}
               italic
               horizontalAlignText="left"
             >
@@ -157,7 +165,9 @@ function Widget() {
               ))}
             {snapshotArray.length > 3 && (
               <AutoLayout verticalAlignItems="center" height="fill-parent">
-                <Text fontSize={12}>{`+${snapshotArray.length - 3}`}</Text>
+                <Text fontFamily="Open Sans" fontSize={12}>{`+${
+                  snapshotArray.length - 3
+                }`}</Text>
               </AutoLayout>
             )}
           </AutoLayout>
@@ -166,9 +176,11 @@ function Widget() {
         {!!roomId && (
           <AutoLayout padding={{ top: 10 }}>
             <Text
+              fontFamily="Open Sans"
               fontSize={10}
+              fontWeight={400}
               fill={colors.GRAPIC_BLACK}
-              fontWeight={300}
+              opacity={0.5}
               italic
             >
               Room: {roomId}
