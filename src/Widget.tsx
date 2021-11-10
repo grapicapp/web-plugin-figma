@@ -1,11 +1,11 @@
 import * as colors from "./colors";
 import * as figmaUtils from "./figmaUtils";
 import GrapicButton from "./GrapicButton";
-import * as logos from "./logos";
+import * as images from "./images";
 import * as types from "./types";
 
 const { widget } = figma;
-const { AutoLayout, Image, Text, useEffect, useSyncedState } = widget;
+const { AutoLayout, Image, SVG, Text, useEffect, useSyncedState } = widget;
 
 // const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
 // const IFRAME_BASE_URL = "http://localhost:3000/";
@@ -17,7 +17,7 @@ function Widget() {
   // TODO: think about the naming here before launch because they are not backward comp.
   const [opened, setOpened] = useSyncedState<boolean>("opened", false);
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
-  const [images, setImages] = useSyncedState<string[]>("images", []);
+  const [imageIds, setImageIds] = useSyncedState<string[]>("imageIds", []);
   const [imageUrls, setImageUrls] = useSyncedState<string[]>("imageUrls", []);
 
   useEffect(() => {
@@ -35,18 +35,18 @@ function Widget() {
         setRoomId(message.roomId);
       }
       if (message.type === "image") {
-        if (images.includes(message.id)) {
+        if (imageIds.includes(message.id)) {
           console.log("Image", message.id, "already on board");
           return;
         }
-        figma.notify(`Adding image on board (${images.length + 1})`);
+        figma.notify(`Adding image on board (${imageIds.length + 1})`);
         const widget = figma.getNodeById(widgetId) as WidgetNode;
         figmaUtils.createImage({
           imageMessage: message,
-          position: images.length,
+          position: imageIds.length,
           widget,
         });
-        setImages([message.id, ...images]);
+        setImageIds([message.id, ...imageIds]);
         setImageUrls([message.url, ...imageUrls]);
       }
     };
@@ -70,11 +70,10 @@ function Widget() {
     >
       <AutoLayout>
         <Image
-          src={logos.grapicNoBorderDataURI}
+          src={images.grapicNoBorderDataURI}
           width={26}
           height={26 * (90 / 110)}
         />
-        {/* <SVG src={logos.grapicNoBorderSvg} width={44} height={36} /> */}
         <AutoLayout padding={{ top: 1, left: 7 }}>
           <Text fontSize={16} fontWeight={800} fill={colors.GRAPIC_BLACK}>
             Grapic
@@ -120,14 +119,18 @@ function Widget() {
         </AutoLayout>
 
         {!!roomId && imageUrls.length === 0 && (
-          <AutoLayout padding={{ top: 10 }}>
+          <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
+            {!!roomId && (
+              <SVG src={images.snapshotButton} width={20} height={20} />
+            )}
             <Text
               fontSize={10}
               fill={colors.GRAPIC_BLACK}
               fontWeight={300}
               italic
+              horizontalAlignText="left"
             >
-              {`Take snapshots with your phone\n to make them appear in Figma`}
+              {`Take snapshots with your phone \nto make them appear in Figma`}
             </Text>
           </AutoLayout>
         )}
