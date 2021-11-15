@@ -103,7 +103,7 @@ function Widget() {
                   IFRAME_BASE_URL + (roomId ? `embed/${roomId}` : "new");
                 console.log("Opening URL", url);
                 const ui = `<script>window.location.href="${url}"</script>`;
-                figma.showUI(ui, { width: 600, height: 600 });
+                figma.showUI(ui, { width: 575, height: 575 });
                 setOpened(true);
                 // figma.ui.on("message", (msg) => { could also be here...
               });
