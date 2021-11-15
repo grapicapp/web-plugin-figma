@@ -16,6 +16,10 @@ function Widget() {
   const widgetId = widget.useWidgetId();
   // TODO: think about the naming here before launch because they are not backward comp.
   const [opened, setOpened] = useSyncedState<boolean>("opened", false);
+  const [roomIsCreating, setRoomIsCreating] = useSyncedState<boolean>(
+    "roomIsCreating",
+    false
+  );
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
   const [snapshots, setSnapshots] = useSyncedState<{
     [imageId: string]: { id: string; createdAtMs: number; url: string };
@@ -54,6 +58,11 @@ function Widget() {
             createdAtMs
           ).toLocaleTimeString()})`
         );
+      }
+      if (message.type === "status") {
+        if (message.status === "creating-room") {
+          setRoomIsCreating(true);
+        }
       }
     };
   });
@@ -98,7 +107,13 @@ function Widget() {
             // "figma.closePlugin()" will terminate the code.
             // () => new Promise((resolve) => {figma.showUI(__html__);})
             onClick={async () => {
-              await new Promise((resolve) => {
+              await new Promise<void>((resolve) => {
+                if (!opened && !roomId && roomIsCreating) {
+                  figma.notify(
+                    "Someone is already creating a room right now, wait a second and try again."
+                  );
+                  return resolve();
+                }
                 const url =
                   IFRAME_BASE_URL + (roomId ? `embed/${roomId}` : "new");
                 console.log("Opening URL", url);
