@@ -20,11 +20,17 @@ export const createImage = ({
 
   const rectangle = figma.createRectangle();
   rectangle.name = imageMessage.id; // TODO: change to date
-  rectangle.x = widget.x - 500 + position * 50;
-  rectangle.y = widget.y + position * 50;
+
+  // stack to the left
+  // rectangle.x = widget.x - 500 + position * 50;
+  // rectangle.y = widget.y + position * 50;
+
+  // stack below
+  rectangle.x = widget.x + position * 40;
+  rectangle.y = widget.y + 350 + position * 20;
 
   rectangle.setPluginData("id", imageMessage.id);
-  rectangle.resize(imageMessage.width * 0.5, imageMessage.height * 0.5);
+  rectangle.resize(imageMessage.width * 0.25, imageMessage.height * 0.25);
 
   console.log(`Created Figma rectangle (${imageMessage.id})`, rectangle);
   // for (const paint of rectangle.fills) {
