@@ -29,7 +29,7 @@ export const createImage = ({
   rectangle.x = widget.x + position * 40;
   rectangle.y = widget.y + 350 + position * 20;
 
-  rectangle.setPluginData("id", imageMessage.id);
+  rectangle.setPluginData("id", imageMessage.id); // TODO: maybe add owner userID here as well?
   rectangle.resize(imageMessage.width * 0.25, imageMessage.height * 0.25);
 
   console.log(`Created Figma rectangle (${imageMessage.id})`, rectangle);

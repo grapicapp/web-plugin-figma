@@ -22,7 +22,7 @@ function Widget() {
   );
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
   const [snapshots, setSnapshots] = useSyncedState<{
-    [imageId: string]: { id: string; createdAtMs: number; url: string };
+    [imageId: string]: { id: string; createdAtMs: number; url: string }; // TODO: maybe add owner userID here?
   }>("snapshots", {});
 
   useEffect(() => {
