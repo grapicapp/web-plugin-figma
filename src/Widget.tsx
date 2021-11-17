@@ -69,6 +69,27 @@ function Widget() {
     };
   });
 
+  /**
+   * Use async callbacks or return a promise to keep the Iframe window opened.
+   * Resolving the promise, closing the Iframe window, or calling
+   * `figma.closePlugin()` will terminate the code.
+   */
+  const onStartClick = () =>
+    new Promise<void>((resolve) => {
+      if (!opened && !roomId && roomIsCreating) {
+        figma.notify(
+          "Someone is already creating a room right now, wait a second and try again."
+        );
+        return resolve();
+      }
+      const url = `${IFRAME_BASE_URL}${roomId ? `embed/${roomId}` : "new"}`;
+      console.log("Opening URL", url);
+      const ui = `<script>window.location.href="${url}"</script>`;
+      figma.showUI(ui, { width: 575, height: 575 });
+      setOpened(true);
+      // figma.ui.on("message", (msg) => { could also be here...
+    });
+
   const snapshotArray = Object.values(snapshots);
 
   return (
@@ -86,31 +107,7 @@ function Widget() {
 
       <AutoLayout direction="vertical" horizontalAlignItems="center">
         <AutoLayout padding={{ top: 15 }}>
-          <GrapicButton
-            // Use async callbacks or return a promise to keep the Iframe window
-            // opened. Resolving the promise, closing the Iframe window, or calling
-            // "figma.closePlugin()" will terminate the code.
-            // () => new Promise((resolve) => {figma.showUI(__html__);})
-            onClick={async () => {
-              await new Promise<void>((resolve) => {
-                if (!opened && !roomId && roomIsCreating) {
-                  figma.notify(
-                    "Someone is already creating a room right now, wait a second and try again."
-                  );
-                  return resolve();
-                }
-                const url =
-                  IFRAME_BASE_URL + (roomId ? `embed/${roomId}` : "new");
-                console.log("Opening URL", url);
-                const ui = `<script>window.location.href="${url}"</script>`;
-                figma.showUI(ui, { width: 575, height: 575 });
-                setOpened(true);
-                // figma.ui.on("message", (msg) => { could also be here...
-              });
-            }}
-          >
-            Start Grapic
-          </GrapicButton>
+          <GrapicButton onClick={onStartClick}>Start Grapic</GrapicButton>
         </AutoLayout>
 
         <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
