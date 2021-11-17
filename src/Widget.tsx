@@ -14,6 +14,8 @@ const { AutoLayout, Image, SVG, useEffect, useSyncedState } = widget;
 const IFRAME_BASE_URL =
   "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
+const NO_OF_SNAPSHOTS_IN_WIDGET = 3;
+
 function Widget() {
   const widgetId = widget.useWidgetId();
   // TODO: think about the naming here before launch because they are not backward comp.
@@ -23,48 +25,64 @@ function Widget() {
     false
   );
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
+  // TODO: maybe useSyncedMap is more performant for this
   const [snapshots, setSnapshots] = useSyncedState<{
     [imageId: string]: { id: string; createdAtMs: number; url: string }; // TODO: maybe add owner userID here?
   }>("snapshots", {});
 
   useEffect(() => {
-    figma.ui.onmessage = (message: types.FigmaMessage) => {
-      // or figma.ui.on("message", (message) => {
-      console.log("Message from UI:", message);
-      if (message.type === "notification") {
-        // TODO: remove the current user permission? or maybe sent it as display name?
-        figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
-      }
-      if (message.type === "action") {
-        figma.closePlugin();
-      }
-      if (message.type === "room") {
-        setRoomId(message.roomId);
-      }
-      if (message.type === "image") {
-        const { id, createdAtMs, url } = message;
-        if (!!snapshots[id]) {
-          console.log(`Image ${id} already on board`);
-          return;
-        }
-        const position = Object.keys(snapshots).length;
-        setSnapshots({ [id]: { id, createdAtMs, url }, ...snapshots });
-        const widget = figma.getNodeById(widgetId) as WidgetNode;
-        figmaUtils.createImage({
-          imageMessage: message,
-          position,
-          widget,
-        });
-        figma.notify(
-          `Adding image on board (${new Date(
-            createdAtMs
-          ).toLocaleTimeString()})`
-        );
-      }
-      if (message.type === "status") {
-        if (message.status === "creating-room") {
-          setRoomIsCreating(true);
-        }
+    figma.ui.onmessage = (message: types.FigmaMessage, props) => {
+      console.log("Message from UI:", message, props.origin);
+      // TOOD: maybe this is even better
+      // const actions = {
+      //   notification: (message: types.FigmaNotificationMessage) => {
+      //     figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
+      //   },
+      //   action: (message: types.FigmaNotificationMessage) => {
+      //     figma.closePlugin();
+      //   },
+      // };
+      // actions[message.type](message);
+
+      switch (message.type) {
+        case "notification":
+          // TODO: remove the current user permission? or maybe sent it as display name?
+          figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
+          break;
+        case "action":
+          figma.closePlugin();
+          break;
+        case "room":
+          setRoomId(message.roomId);
+          break;
+        case "image":
+          const { id, createdAtMs, url } = message;
+          if (!!snapshots[id]) {
+            console.log(`Image ${id} already on board`);
+            return;
+          }
+          const position = Object.keys(snapshots).length;
+          setSnapshots({ [id]: { id, createdAtMs, url }, ...snapshots });
+          const widget = figma.getNodeById(widgetId) as WidgetNode;
+          figmaUtils.createImage({
+            imageMessage: message,
+            position,
+            widget,
+          });
+          figma.notify(
+            `Adding image on board (${new Date(
+              createdAtMs
+            ).toLocaleTimeString()})`
+          );
+          break;
+        case "status":
+          if (message.status === "creating-room") {
+            setRoomIsCreating(true);
+          }
+          break;
+        default:
+          console.error("This message is not supported", message);
+          break;
       }
     };
   });
@@ -87,7 +105,6 @@ function Widget() {
       const ui = `<script>window.location.href="${url}"</script>`;
       figma.showUI(ui, { width: 575, height: 575 });
       setOpened(true);
-      // figma.ui.on("message", (msg) => { could also be here...
     });
 
   const snapshotArray = Object.values(snapshots);
@@ -112,9 +129,7 @@ function Widget() {
 
         <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
           <GrapicText horizontalAlignText="center">
-            {!!roomId
-              ? "Sketch on paper or whiteboard and\nget it directly into Figma"
-              : opened
+            {opened && !roomId
               ? "Creating your Grapic..."
               : "Sketch on paper or whiteboard and\nget it directly into Figma"}
           </GrapicText>
@@ -142,7 +157,7 @@ function Widget() {
           <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
             {snapshotArray
               .sort((a, b) => a.createdAtMs - b.createdAtMs)
-              .slice(3 * -1)
+              .slice(NO_OF_SNAPSHOTS_IN_WIDGET * -1)
               .map((image) => (
                 <Image
                   key={image.id}
@@ -153,9 +168,11 @@ function Widget() {
                   cornerRadius={6}
                 />
               ))}
-            {snapshotArray.length > 3 && (
+            {snapshotArray.length > NO_OF_SNAPSHOTS_IN_WIDGET && (
               <AutoLayout verticalAlignItems="center" height="fill-parent">
-                <GrapicText>{`+${snapshotArray.length - 3}`}</GrapicText>
+                <GrapicText>{`+${
+                  snapshotArray.length - NO_OF_SNAPSHOTS_IN_WIDGET
+                }`}</GrapicText>
               </AutoLayout>
             )}
           </AutoLayout>
