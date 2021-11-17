@@ -4,7 +4,7 @@ import * as figmaUtils from "./figmaUtils";
 const { widget } = figma;
 const { AutoLayout, Text } = widget;
 
-const GrapicButton = (props: { text: string; onClick?: () => void }) => {
+const GrapicButton: AutoLayout = (props) => {
   return (
     <AutoLayout
       fill={colors.GRAPIC_YELLOW}
@@ -15,7 +15,7 @@ const GrapicButton = (props: { text: string; onClick?: () => void }) => {
         right: figmaUtils.remToPx(1.5),
       }}
       cornerRadius={figmaUtils.remToPx(0.6)}
-      onClick={props.onClick}
+      {...props}
     >
       <Text
         fontFamily="Poppins"
@@ -24,7 +24,7 @@ const GrapicButton = (props: { text: string; onClick?: () => void }) => {
         horizontalAlignText="center"
         fill={colors.GRAPIC_BLACK}
       >
-        {props.text}
+        {props.children}
       </Text>
     </AutoLayout>
   );

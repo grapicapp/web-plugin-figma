@@ -101,7 +101,6 @@ function Widget() {
       <AutoLayout direction="vertical" horizontalAlignItems="center">
         <AutoLayout padding={{ top: 15 }}>
           <GrapicButton
-            text="Start Grapic"
             // Use async callbacks or return a promise to keep the Iframe window
             // opened. Resolving the promise, closing the Iframe window, or calling
             // "figma.closePlugin()" will terminate the code.
@@ -123,7 +122,9 @@ function Widget() {
                 // figma.ui.on("message", (msg) => { could also be here...
               });
             }}
-          />
+          >
+            Start Grapic
+          </GrapicButton>
         </AutoLayout>
 
         <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
