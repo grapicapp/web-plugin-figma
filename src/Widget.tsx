@@ -1,6 +1,7 @@
 import * as colors from "./colors";
 import * as figmaUtils from "./figmaUtils";
 import GrapicButton from "./GrapicButton";
+import GrapicText from "./GrapicText";
 import * as images from "./images";
 import * as types from "./types";
 
@@ -128,19 +129,13 @@ function Widget() {
         </AutoLayout>
 
         <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
-          <Text
-            fontFamily="Open Sans"
-            fontSize={12}
-            fontWeight={400}
-            horizontalAlignText="center"
-            fill={colors.GRAPIC_BLACK}
-          >
+          <GrapicText horizontalAlignText="center">
             {!!roomId
               ? "Sketch on paper or whiteboard and\nget it directly into Figma"
               : opened
               ? "Creating your Grapic..."
               : "Sketch on paper or whiteboard and\nget it directly into Figma"}
-          </Text>
+          </GrapicText>
         </AutoLayout>
 
         {!!roomId && snapshotArray.length === 0 && (
@@ -150,17 +145,14 @@ function Widget() {
                 <SVG src={images.snapshotButton} width={18} height={18} />
               </AutoLayout>
             )}
-            <Text
-              fontFamily="Open Sans"
+            <GrapicText
               fontSize={10}
-              fontWeight={400}
-              fill={colors.GRAPIC_BLACK}
               opacity={0.5}
               italic
               horizontalAlignText="left"
             >
               {`Take snapshots with your phone \nto make them appear in Figma`}
-            </Text>
+            </GrapicText>
           </AutoLayout>
         )}
 
@@ -181,9 +173,7 @@ function Widget() {
               ))}
             {snapshotArray.length > 3 && (
               <AutoLayout verticalAlignItems="center" height="fill-parent">
-                <Text fontFamily="Open Sans" fontSize={12}>{`+${
-                  snapshotArray.length - 3
-                }`}</Text>
+                <GrapicText>{`+${snapshotArray.length - 3}`}</GrapicText>
               </AutoLayout>
             )}
           </AutoLayout>
@@ -191,16 +181,9 @@ function Widget() {
 
         {!!roomId && (
           <AutoLayout padding={{ top: 10 }}>
-            <Text
-              fontFamily="Open Sans"
-              fontSize={10}
-              fontWeight={400}
-              fill={colors.GRAPIC_BLACK}
-              opacity={0.5}
-              italic
-            >
+            <GrapicText fontSize={10} opacity={0.5} italic>
               Room: {roomId}
-            </Text>
+            </GrapicText>
           </AutoLayout>
         )}
       </AutoLayout>
