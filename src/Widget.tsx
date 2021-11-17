@@ -7,7 +7,7 @@ import Logo from "./Logo";
 import * as types from "./types";
 
 const { widget } = figma;
-const { AutoLayout, Image, SVG, Text, useEffect, useSyncedState } = widget;
+const { AutoLayout, Image, SVG, useEffect, useSyncedState } = widget;
 
 // const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
 // const IFRAME_BASE_URL = "http://localhost:3000/";
