@@ -3,6 +3,7 @@ import * as figmaUtils from "./figmaUtils";
 import GrapicButton from "./GrapicButton";
 import GrapicText from "./GrapicText";
 import * as images from "./images";
+import Logo from "./Logo";
 import * as types from "./types";
 
 const { widget } = figma;
@@ -81,23 +82,7 @@ function Widget() {
       cornerRadius={figmaUtils.remToPx(1)}
       spacing={6}
     >
-      <AutoLayout>
-        <Image
-          src={images.grapicNoBorderDataURI}
-          width={26}
-          height={26 * (90 / 110)}
-        />
-        <AutoLayout padding={{ top: 1, left: 7 }}>
-          <Text
-            fontFamily="Poppins"
-            fontSize={16}
-            fontWeight={700}
-            fill={colors.GRAPIC_BLACK}
-          >
-            Grapic
-          </Text>
-        </AutoLayout>
-      </AutoLayout>
+      <Logo />
 
       <AutoLayout direction="vertical" horizontalAlignItems="center">
         <AutoLayout padding={{ top: 15 }}>
