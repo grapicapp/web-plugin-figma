@@ -33,6 +33,13 @@ function Widget() {
     createdAtMs: number;
     url: string;
   }>("snapshotMap");
+  const figmaUsers = useSyncedMap<{
+    id: string;
+    name: string;
+    color: string;
+    photoUrl: string;
+    active: boolean;
+  }>("figmaUsers");
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage, props) => {
@@ -90,6 +97,15 @@ function Widget() {
           break;
       }
     };
+    figma.on("close", () => {
+      figmaUsers.set(figma.currentUser.id, {
+        id: figma.currentUser.id,
+        photoUrl: figma.currentUser.photoUrl,
+        name: figma.currentUser.name,
+        color: figma.currentUser.color,
+        active: false,
+      });
+    });
   });
 
   /**
@@ -110,6 +126,13 @@ function Widget() {
       const ui = `<script>window.location.href="${url}"</script>`;
       figma.showUI(ui, { width: 575, height: 575 });
       setOpened(true);
+      figmaUsers.set(figma.currentUser.id, {
+        id: figma.currentUser.id,
+        photoUrl: figma.currentUser.photoUrl,
+        name: figma.currentUser.name,
+        color: figma.currentUser.color,
+        active: true,
+      });
     });
 
   return (
@@ -124,7 +147,29 @@ function Widget() {
       cornerRadius={figmaUtils.remToPx(1)}
       spacing={6}
     >
-      <Logo />
+      <AutoLayout name="Header" width="fill-parent">
+        <Logo />
+        {figmaUsers.size > 0 && (
+          <AutoLayout
+            name="Users"
+            width="fill-parent"
+            horizontalAlignItems="end"
+            spacing={2}
+          >
+            {figmaUsers.values().map((user) => (
+              <Image
+                key={user.id}
+                src={user.photoUrl}
+                name={user.name}
+                cornerRadius={24}
+                width={24}
+                height={24}
+                opacity={user.active ? 1 : 0.5}
+              />
+            ))}
+          </AutoLayout>
+        )}
+      </AutoLayout>
 
       <AutoLayout
         name="Content"
