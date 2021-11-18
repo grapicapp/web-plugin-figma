@@ -6,22 +6,28 @@ const { AutoLayout, Image, Text } = widget;
 
 const Logo: AutoLayout = (props) => {
   return (
-    <AutoLayout {...props}>
+    <AutoLayout
+      name="Logo"
+      height="hug-contents"
+      verticalAlignItems="center"
+      spacing={7}
+      {...props}
+    >
       <Image
+        name="Grapic Logo"
         src={images.grapicNoBorderDataURI}
         width={26}
         height={26 * (90 / 110)}
       />
-      <AutoLayout padding={{ top: 1, left: 7 }}>
-        <Text
-          fontFamily="Poppins"
-          fontSize={16}
-          fontWeight={700}
-          fill={colors.GRAPIC_BLACK}
-        >
-          Grapic
-        </Text>
-      </AutoLayout>
+      <Text
+        fontFamily="Poppins"
+        fontSize={16}
+        fontWeight={700}
+        fill={colors.GRAPIC_BLACK}
+        verticalAlignText="center"
+      >
+        Grapic
+      </Text>
     </AutoLayout>
   );
 };

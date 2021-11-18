@@ -114,6 +114,7 @@ function Widget() {
 
   return (
     <AutoLayout
+      name="Grapic for Figma"
       direction="vertical"
       horizontalAlignItems="start"
       verticalAlignItems="center"
@@ -125,12 +126,18 @@ function Widget() {
     >
       <Logo />
 
-      <AutoLayout direction="vertical" horizontalAlignItems="center">
-        <AutoLayout padding={{ top: 15 }}>
-          <GrapicButton onClick={onStartClick}>Start Grapic</GrapicButton>
-        </AutoLayout>
+      <AutoLayout
+        name="Content"
+        direction="vertical"
+        horizontalAlignItems="center"
+        padding={{ top: 15 }}
+      >
+        <GrapicButton onClick={onStartClick}>Start Grapic</GrapicButton>
 
-        <AutoLayout padding={{ top: 20, bottom: 10, left: 25, right: 25 }}>
+        <AutoLayout
+          name="Instructions"
+          padding={{ top: 20, bottom: 10, left: 25, right: 25 }}
+        >
           <GrapicText horizontalAlignText="center">
             {opened && !roomId
               ? "Creating your Grapic..."
@@ -139,11 +146,19 @@ function Widget() {
         </AutoLayout>
 
         {!!roomId && snapshots.size === 0 && (
-          <AutoLayout padding={{ top: 15, bottom: 15 }} spacing={10}>
+          <AutoLayout
+            name="Phone instructions"
+            padding={{ top: 15, bottom: 15 }}
+            spacing={10}
+            verticalAlignItems="center"
+          >
             {!!roomId && (
-              <AutoLayout padding={{ top: 3 }}>
-                <SVG src={images.snapshotButton} width={18} height={18} />
-              </AutoLayout>
+              <SVG
+                name="Snapshot icon"
+                src={images.snapshotButton}
+                width={18}
+                height={18}
+              />
             )}
             <GrapicText
               fontSize={10}
@@ -157,7 +172,12 @@ function Widget() {
         )}
 
         {snapshots.size > 0 && (
-          <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
+          <AutoLayout
+            name="Snapshots"
+            padding={{ top: 20, bottom: 10 }}
+            spacing={10}
+            verticalAlignItems="center"
+          >
             {snapshots
               .values()
               .sort((a, b) => a.createdAtMs - b.createdAtMs)
@@ -173,19 +193,17 @@ function Widget() {
                 />
               ))}
             {snapshots.size > NO_OF_SNAPSHOTS_IN_WIDGET && (
-              <AutoLayout verticalAlignItems="center" height="fill-parent">
-                <GrapicText>{`+${
-                  snapshots.size - NO_OF_SNAPSHOTS_IN_WIDGET
-                }`}</GrapicText>
-              </AutoLayout>
+              <GrapicText>{`+${
+                snapshots.size - NO_OF_SNAPSHOTS_IN_WIDGET
+              }`}</GrapicText>
             )}
           </AutoLayout>
         )}
 
         {!!roomId && (
-          <AutoLayout padding={{ top: 10 }}>
+          <AutoLayout name="Room" padding={{ top: 10 }}>
             <GrapicText fontSize={10} opacity={0.5} italic>
-              Room: {roomId}
+              {`Room: ${roomId}`}
             </GrapicText>
           </AutoLayout>
         )}

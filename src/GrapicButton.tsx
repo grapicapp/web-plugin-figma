@@ -7,6 +7,7 @@ const { AutoLayout, Text } = widget;
 const GrapicButton: AutoLayout = (props) => {
   return (
     <AutoLayout
+      name="Grapic button"
       fill={colors.GRAPIC_YELLOW}
       padding={{
         top: figmaUtils.remToPx(0.8),
