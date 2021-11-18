@@ -7,7 +7,8 @@ import Logo from "./Logo";
 import * as types from "./types";
 
 const { widget } = figma;
-const { AutoLayout, Image, SVG, useEffect, useSyncedState } = widget;
+const { AutoLayout, Image, SVG, useEffect, useSyncedMap, useSyncedState } =
+  widget;
 
 // const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
 // const IFRAME_BASE_URL = "http://localhost:3000/";
@@ -25,10 +26,13 @@ function Widget() {
     false
   );
   const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
-  // TODO: maybe useSyncedMap is more performant for this
-  const [snapshots, setSnapshots] = useSyncedState<{
-    [imageId: string]: { id: string; createdAtMs: number; url: string }; // TODO: maybe add owner userID here?
-  }>("snapshots", {});
+
+  const snapshots = useSyncedMap<{
+    // TODO: maybe add owner userID here?
+    id: string;
+    createdAtMs: number;
+    url: string;
+  }>("snapshotMap");
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage, props) => {
@@ -57,16 +61,16 @@ function Widget() {
           break;
         case "image":
           const { id, createdAtMs, url } = message;
-          if (!!snapshots[id]) {
+          if (!!snapshots.get(id)) {
             console.log(`Image ${id} already on board`);
             return;
           }
-          const position = Object.keys(snapshots).length;
-          setSnapshots({ [id]: { id, createdAtMs, url }, ...snapshots });
+          const positionOnBoard = snapshots.size;
+          snapshots.set(id, { id, createdAtMs, url });
           const widget = figma.getNodeById(widgetId) as WidgetNode;
           figmaUtils.createImage({
             imageMessage: message,
-            position,
+            position: positionOnBoard,
             widget,
           });
           figma.notify(
@@ -107,8 +111,6 @@ function Widget() {
       setOpened(true);
     });
 
-  const snapshotArray = Object.values(snapshots);
-
   return (
     <AutoLayout
       direction="vertical"
@@ -135,7 +137,7 @@ function Widget() {
           </GrapicText>
         </AutoLayout>
 
-        {!!roomId && snapshotArray.length === 0 && (
+        {!!roomId && snapshots.size === 0 && (
           <AutoLayout padding={{ top: 15, bottom: 15 }} spacing={10}>
             {!!roomId && (
               <AutoLayout padding={{ top: 3 }}>
@@ -153,9 +155,10 @@ function Widget() {
           </AutoLayout>
         )}
 
-        {snapshotArray.length > 0 && (
+        {snapshots.size > 0 && (
           <AutoLayout padding={{ top: 20, bottom: 10 }} spacing={10}>
-            {snapshotArray
+            {snapshots
+              .values()
               .sort((a, b) => a.createdAtMs - b.createdAtMs)
               .slice(NO_OF_SNAPSHOTS_IN_WIDGET * -1)
               .map((image) => (
@@ -168,10 +171,10 @@ function Widget() {
                   cornerRadius={6}
                 />
               ))}
-            {snapshotArray.length > NO_OF_SNAPSHOTS_IN_WIDGET && (
+            {snapshots.size > NO_OF_SNAPSHOTS_IN_WIDGET && (
               <AutoLayout verticalAlignItems="center" height="fill-parent">
                 <GrapicText>{`+${
-                  snapshotArray.length - NO_OF_SNAPSHOTS_IN_WIDGET
+                  snapshots.size - NO_OF_SNAPSHOTS_IN_WIDGET
                 }`}</GrapicText>
               </AutoLayout>
             )}
