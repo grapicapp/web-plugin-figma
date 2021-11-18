@@ -16,6 +16,7 @@ const IFRAME_BASE_URL =
   "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 const NO_OF_SNAPSHOTS_IN_WIDGET = 3;
+const NO_OF_USERS_IN_WIDGET = 6;
 
 function Widget() {
   const widgetId = widget.useWidgetId();
@@ -126,6 +127,7 @@ function Widget() {
       const ui = `<script>window.location.href="${url}"</script>`;
       figma.showUI(ui, { width: 575, height: 575 });
       setOpened(true);
+      // TODO: should I use figma.currentUser.sessionId here?
       figmaUsers.set(figma.currentUser.id, {
         id: figma.currentUser.id,
         photoUrl: figma.currentUser.photoUrl,
@@ -154,19 +156,28 @@ function Widget() {
             name="Users"
             width="fill-parent"
             horizontalAlignItems="end"
-            spacing={2}
+            verticalAlignItems="center"
+            spacing={4}
           >
-            {figmaUsers.values().map((user) => (
-              <Image
-                key={user.id}
-                src={user.photoUrl}
-                name={user.name}
-                cornerRadius={24}
-                width={24}
-                height={24}
-                opacity={user.active ? 1 : 0.5}
-              />
-            ))}
+            {figmaUsers
+              .values()
+              .slice(NO_OF_USERS_IN_WIDGET * -1)
+              .map((user) => (
+                <Image
+                  key={user.id}
+                  src={user.photoUrl}
+                  name={user.name}
+                  cornerRadius={24}
+                  width={24}
+                  height={24}
+                  opacity={user.active ? 1 : 0.5}
+                />
+              ))}
+            {figmaUsers.size > NO_OF_USERS_IN_WIDGET && (
+              <GrapicText>
+                {`+${figmaUsers.size - NO_OF_USERS_IN_WIDGET}`}
+              </GrapicText>
+            )}
           </AutoLayout>
         )}
       </AutoLayout>
@@ -240,9 +251,9 @@ function Widget() {
                 />
               ))}
             {snapshots.size > NO_OF_SNAPSHOTS_IN_WIDGET && (
-              <GrapicText>{`+${
-                snapshots.size - NO_OF_SNAPSHOTS_IN_WIDGET
-              }`}</GrapicText>
+              <GrapicText>
+                {`+${snapshots.size - NO_OF_SNAPSHOTS_IN_WIDGET}`}
+              </GrapicText>
             )}
           </AutoLayout>
         )}
