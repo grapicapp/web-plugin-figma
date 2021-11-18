@@ -202,7 +202,12 @@ function Widget() {
 
         {!!roomId && (
           <AutoLayout name="Room" padding={{ top: 10 }}>
-            <GrapicText fontSize={10} opacity={0.5} italic>
+            <GrapicText
+              fontSize={10}
+              opacity={0.5}
+              italic
+              href={`${IFRAME_BASE_URL}room/${roomId}`}
+            >
               {`Room: ${roomId}`}
             </GrapicText>
           </AutoLayout>
