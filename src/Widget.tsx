@@ -132,7 +132,9 @@ function Widget() {
         horizontalAlignItems="center"
         padding={{ top: 15 }}
       >
-        <GrapicButton onClick={onStartClick}>Start Grapic</GrapicButton>
+        <GrapicButton onClick={onStartClick}>
+          {roomId ? "View Grapic" : "Start Grapic"}
+        </GrapicButton>
 
         <AutoLayout
           name="Instructions"
