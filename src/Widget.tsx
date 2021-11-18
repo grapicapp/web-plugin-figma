@@ -18,6 +18,7 @@ const IFRAME_BASE_URL =
 const NO_OF_SNAPSHOTS_IN_WIDGET = 3;
 
 function Widget() {
+  const widgetId = widget.useWidgetId();
   // TODO: think about the naming here before launch because they are not backward comp.
   const [opened, setOpened] = useSyncedState<boolean>("opened", false);
   const [roomIsCreating, setRoomIsCreating] = useSyncedState<boolean>(
@@ -67,7 +68,6 @@ function Widget() {
           const positionOnBoard = snapshots.size;
           snapshots.set(id, { id, createdAtMs, url });
 
-          const widgetId = figma.widget.useWidgetId();
           const widget = figma.getNodeById(widgetId) as WidgetNode;
           figmaUtils.createImage({
             imageMessage: message,
