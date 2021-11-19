@@ -17,6 +17,10 @@ const IFRAME_BASE_URL =
 
 const NO_OF_SNAPSHOTS_IN_WIDGET = 3;
 const NO_OF_USERS_IN_WIDGET = 6;
+const UI_WIDTH = 575;
+const UI_HEIGHT = 575;
+const MAX_WIDGET_WIDTH = 310;
+const UI_MARGIN_FROM_WIDGET = 20;
 
 function Widget() {
   const widgetId = widget.useWidgetId();
@@ -93,7 +97,7 @@ function Widget() {
     new Promise<void>((resolve) => {
       if (!roomId && "id" in creator && creator.id !== figma.currentUser.id) {
         figma.notify(
-          `${creator.name} is already creating a Grapic, wait a second and try again.`
+          `${creator.name} is already creating a Grapic, you can view it in any second now.`
         );
         return resolve();
       }
@@ -101,7 +105,22 @@ function Widget() {
       const url = `${IFRAME_BASE_URL}${roomId ? `embed/${roomId}` : "new"}`;
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
-      figma.showUI(ui, { width: 575, height: 575 });
+
+      const widget = figma.getNodeById(widgetId) as WidgetNode;
+      const shouldPositionUiToLeft =
+        widget.x + MAX_WIDGET_WIDTH + UI_WIDTH / figma.viewport.zoom >
+        figma.viewport.bounds.x + figma.viewport.bounds.width;
+
+      figma.showUI(ui, {
+        width: UI_WIDTH,
+        height: UI_HEIGHT,
+        position: {
+          x: shouldPositionUiToLeft
+            ? widget.x - UI_MARGIN_FROM_WIDGET - UI_WIDTH / figma.viewport.zoom
+            : widget.x + MAX_WIDGET_WIDTH + UI_MARGIN_FROM_WIDGET,
+          y: widget.y - widget.height / 2,
+        },
+      });
     });
 
   return (
