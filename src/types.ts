@@ -11,6 +11,13 @@ export interface Snapshots {
   url: string;
 }
 
+export type Creator =
+  | {
+      id: string;
+      name: string;
+    }
+  | {};
+
 export type FigmaMessage =
   | FigmaActionMessage
   | FigmaImageMessage

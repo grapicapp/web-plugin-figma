@@ -28,14 +28,10 @@ function Widget() {
    *
    * TODO: think about the naming here before launch because they are not backward comp.
    */
-  const [opened, setOpened] = useSyncedState<boolean>("opened", false);
-  const [roomIsCreating, setRoomIsCreating] = useSyncedState<boolean>(
-    "roomIsCreating",
-    false
-  );
+  const [creator, setCreator] = useSyncedState<types.Creator>("creator", {});
   const [roomId, setRoomId] = useSyncedState<string>("roomId", "");
-  const snapshots = useSyncedMap<types.Snapshots>("snapshotMap");
   const activeUsers = useSyncedMap<types.ActiveUsers>("activeUsers");
+  const snapshots = useSyncedMap<types.Snapshots>("snapshots");
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage, props) => {
@@ -71,11 +67,6 @@ function Widget() {
             ).toLocaleTimeString()})`
           );
           break;
-        case "status":
-          if (message.status === "creating-room") {
-            setRoomIsCreating(true);
-          }
-          break;
         default:
           console.error("This message is not supported", message);
           break;
@@ -83,12 +74,12 @@ function Widget() {
     };
 
     figma.on("run", () => {
-      const { sessionId, ...rest } = figma.currentUser;
-      activeUsers.set(sessionId.toString(), { ...rest, active: true });
+      const { sessionId, ...user } = figma.currentUser;
+      setCreator({ id: user.id, name: user.name });
+      activeUsers.set(sessionId.toString(), { ...user, active: true });
 
       figma.once("close", () => {
-        const { sessionId, ...rest } = figma.currentUser;
-        activeUsers.set(sessionId.toString(), { ...rest, active: false });
+        activeUsers.set(sessionId.toString(), { ...user, active: false });
       });
     });
   });
@@ -100,9 +91,9 @@ function Widget() {
    */
   const onStartClick = () =>
     new Promise<void>((resolve) => {
-      if (!opened && !roomId && roomIsCreating) {
+      if (!roomId && "id" in creator && creator.id !== figma.currentUser.id) {
         figma.notify(
-          "Someone is already creating a room right now, wait a second and try again."
+          `${creator.name} is already creating a Grapic, wait a second and try again.`
         );
         return resolve();
       }
@@ -111,7 +102,6 @@ function Widget() {
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
       figma.showUI(ui, { width: 575, height: 575 });
-      setOpened(true);
     });
 
   return (
@@ -175,7 +165,7 @@ function Widget() {
           padding={{ top: 20, bottom: 10, left: 25, right: 25 }}
         >
           <GrapicText horizontalAlignText="center">
-            {opened && !roomId
+            {"id" in creator && !roomId
               ? "Creating your Grapic..."
               : "Sketch on paper or whiteboard and\nget it directly into Figma"}
           </GrapicText>
