@@ -20,45 +20,28 @@ const NO_OF_USERS_IN_WIDGET = 6;
 
 function Widget() {
   const widgetId = widget.useWidgetId();
-  // TODO: think about the naming here before launch because they are not backward comp.
+
+  /**
+   * Note:  the names of useSyncedState or useSyncedMap can not be changed
+   * Note:  default values only set if the client doesn't have a value stored already
+   * Read more at: https://www.figma.com/widget-docs/stability-and-updates/
+   *
+   * TODO: think about the naming here before launch because they are not backward comp.
+   */
   const [opened, setOpened] = useSyncedState<boolean>("opened", false);
   const [roomIsCreating, setRoomIsCreating] = useSyncedState<boolean>(
     "roomIsCreating",
     false
   );
-  const [roomId, setRoomId] = useSyncedState<string | null>("roomId", null);
-
-  const snapshots = useSyncedMap<{
-    // TODO: maybe add owner userID here?
-    id: string;
-    createdAtMs: number;
-    url: string;
-  }>("snapshotMap");
-  const figmaUsers = useSyncedMap<{
-    id: string;
-    name: string;
-    color: string;
-    photoUrl: string;
-    active: boolean;
-  }>("figmaUsers");
+  const [roomId, setRoomId] = useSyncedState<string>("roomId", "");
+  const snapshots = useSyncedMap<types.Snapshots>("snapshotMap");
+  const activeUsers = useSyncedMap<types.ActiveUsers>("activeUsers");
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage, props) => {
       console.log("Message from UI:", message, props.origin);
-      // TOOD: maybe this is even better
-      // const actions = {
-      //   notification: (message: types.FigmaNotificationMessage) => {
-      //     figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
-      //   },
-      //   action: (message: types.FigmaNotificationMessage) => {
-      //     figma.closePlugin();
-      //   },
-      // };
-      // actions[message.type](message);
-
       switch (message.type) {
         case "notification":
-          // TODO: remove the current user permission? or maybe sent it as display name?
           figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
           break;
         case "action":
@@ -74,7 +57,7 @@ function Widget() {
             return;
           }
           const positionOnBoard = snapshots.size;
-          snapshots.set(id, { id, createdAtMs, url });
+          snapshots.set(id, { createdAtMs, url });
 
           const widget = figma.getNodeById(widgetId) as WidgetNode;
           figmaUtils.createImage({
@@ -98,13 +81,14 @@ function Widget() {
           break;
       }
     };
-    figma.on("close", () => {
-      figmaUsers.set(figma.currentUser.id, {
-        id: figma.currentUser.id,
-        photoUrl: figma.currentUser.photoUrl,
-        name: figma.currentUser.name,
-        color: figma.currentUser.color,
-        active: false,
+
+    figma.on("run", () => {
+      const { sessionId, ...rest } = figma.currentUser;
+      activeUsers.set(sessionId.toString(), { ...rest, active: true });
+
+      figma.once("close", () => {
+        const { sessionId, ...rest } = figma.currentUser;
+        activeUsers.set(sessionId.toString(), { ...rest, active: false });
       });
     });
   });
@@ -122,19 +106,12 @@ function Widget() {
         );
         return resolve();
       }
+
       const url = `${IFRAME_BASE_URL}${roomId ? `embed/${roomId}` : "new"}`;
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
       figma.showUI(ui, { width: 575, height: 575 });
       setOpened(true);
-      // TODO: should I use figma.currentUser.sessionId here?
-      figmaUsers.set(figma.currentUser.id, {
-        id: figma.currentUser.id,
-        photoUrl: figma.currentUser.photoUrl,
-        name: figma.currentUser.name,
-        color: figma.currentUser.color,
-        active: true,
-      });
     });
 
   return (
@@ -151,7 +128,7 @@ function Widget() {
     >
       <AutoLayout name="Header" width="fill-parent">
         <Logo />
-        {figmaUsers.size > 0 && (
+        {activeUsers.size > 0 && (
           <AutoLayout
             name="Users"
             width="fill-parent"
@@ -159,12 +136,13 @@ function Widget() {
             verticalAlignItems="center"
             spacing={4}
           >
-            {figmaUsers
-              .values()
-              .slice(NO_OF_USERS_IN_WIDGET * -1)
-              .map((user) => (
+            {activeUsers
+              .entries()
+              .slice(0, NO_OF_USERS_IN_WIDGET)
+              .reverse()
+              .map(([sessionId, user]) => (
                 <Image
-                  key={user.id}
+                  key={sessionId}
                   src={user.photoUrl}
                   name={user.name}
                   cornerRadius={24}
@@ -173,9 +151,9 @@ function Widget() {
                   opacity={user.active ? 1 : 0.5}
                 />
               ))}
-            {figmaUsers.size > NO_OF_USERS_IN_WIDGET && (
+            {activeUsers.size > NO_OF_USERS_IN_WIDGET && (
               <GrapicText>
-                {`+${figmaUsers.size - NO_OF_USERS_IN_WIDGET}`}
+                {`+${activeUsers.size - NO_OF_USERS_IN_WIDGET}`}
               </GrapicText>
             )}
           </AutoLayout>
@@ -237,12 +215,12 @@ function Widget() {
             verticalAlignItems="center"
           >
             {snapshots
-              .values()
-              .sort((a, b) => a.createdAtMs - b.createdAtMs)
+              .entries()
+              .sort(([, a], [, b]) => a.createdAtMs - b.createdAtMs)
               .slice(NO_OF_SNAPSHOTS_IN_WIDGET * -1)
-              .map((image) => (
+              .map(([id, image]) => (
                 <Image
-                  key={image.id}
+                  key={id}
                   name={new Date(image.createdAtMs).toLocaleString()}
                   src={image.url}
                   width={80}

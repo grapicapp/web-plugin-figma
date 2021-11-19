@@ -1,3 +1,16 @@
+export interface ActiveUsers {
+  id: string;
+  name: string;
+  color: string;
+  photoUrl: string;
+  active: boolean;
+}
+
+export interface Snapshots {
+  createdAtMs: number;
+  url: string;
+}
+
 export type FigmaMessage =
   | FigmaActionMessage
   | FigmaImageMessage
