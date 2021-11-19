@@ -10,6 +10,7 @@ const { widget } = figma;
 const { AutoLayout, Image, SVG, useEffect, useSyncedMap, useSyncedState } =
   widget;
 
+// TODO: fix this to proper URL
 // const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
 // const IFRAME_BASE_URL = "http://localhost:3000/";
 const IFRAME_BASE_URL =
@@ -22,6 +23,10 @@ const UI_HEIGHT = 575;
 const MAX_WIDGET_WIDTH = 310;
 const UI_MARGIN_FROM_WIDGET = 20;
 
+/**
+ * TODO: add analytics
+ * TODO: should we use clientId instead of userId?
+ */
 function Widget() {
   const widgetId = widget.useWidgetId();
 
@@ -102,7 +107,10 @@ function Widget() {
         return resolve();
       }
 
-      const url = `${IFRAME_BASE_URL}${roomId ? `embed/${roomId}` : "new"}`;
+      // TODO: fix so this doesn't open the sign in modal when opening existing room unauthed
+      const url = `${IFRAME_BASE_URL}${
+        roomId ? `embed/${roomId}` : "new/embed?authenticate=anonymous"
+      }`;
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
 
