@@ -9,6 +9,8 @@ export interface ActiveUsers {
 export interface Snapshots {
   createdAtMs: number;
   url: string;
+  width: number;
+  height: number;
 }
 
 export type Creator =

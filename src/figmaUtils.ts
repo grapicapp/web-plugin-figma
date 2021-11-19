@@ -19,7 +19,7 @@ export const createImage = ({
   console.log(`Created Figma image (${imageMessage.id})`, image);
 
   const rectangle = figma.createRectangle();
-  rectangle.name = imageMessage.id; // TODO: change to date
+  rectangle.name = new Date(imageMessage.createdAtMs).toLocaleString();
 
   // stack to the left
   // rectangle.x = widget.x - 500 + position * 50;
@@ -29,7 +29,12 @@ export const createImage = ({
   rectangle.x = widget.x + position * 40;
   rectangle.y = widget.y + 350 + position * 20;
 
-  rectangle.setPluginData("id", imageMessage.id); // TODO: maybe add owner userID here as well?
+  rectangle.setPluginData("id", imageMessage.id);
+  rectangle.setPluginData("width", imageMessage.width.toString());
+  rectangle.setPluginData("height", imageMessage.height.toString());
+  rectangle.setPluginData("createdAtMs", imageMessage.createdAtMs.toString());
+  rectangle.setPluginData("url", imageMessage.url);
+
   rectangle.resize(imageMessage.width * 0.25, imageMessage.height * 0.25);
 
   console.log(`Created Figma rectangle (${imageMessage.id})`, rectangle);

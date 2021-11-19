@@ -51,13 +51,13 @@ function Widget() {
           setRoomId(message.roomId);
           break;
         case "image":
-          const { id, createdAtMs, url } = message;
+          const { id, createdAtMs, url, width, height } = message;
           if (!!snapshots.get(id)) {
             console.log(`Image ${id} already on board`);
             return;
           }
           const positionOnBoard = snapshots.size;
-          snapshots.set(id, { createdAtMs, url });
+          snapshots.set(id, { createdAtMs, url, width, height });
 
           const widget = figma.getNodeById(widgetId) as WidgetNode;
           figmaUtils.createImage({
