@@ -4,17 +4,12 @@ import GrapicButton from "./GrapicButton";
 import GrapicText from "./GrapicText";
 import * as images from "./images";
 import Logo from "./Logo";
+import * as routes from "./routes";
 import * as types from "./types";
 
 const { widget } = figma;
 const { AutoLayout, Image, SVG, useEffect, useSyncedMap, useSyncedState } =
   widget;
-
-// TODO: fix this to proper URL
-// const IFRAME_BASE_URL = "https://staging.app.grapic.co/";
-// const IFRAME_BASE_URL = "http://localhost:3000/";
-const IFRAME_BASE_URL =
-  "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app/";
 
 const NO_OF_SNAPSHOTS_IN_WIDGET = 3;
 const NO_OF_USERS_IN_WIDGET = 6;
@@ -107,10 +102,9 @@ function Widget() {
         return resolve();
       }
 
-      // TODO: fix so this doesn't open the sign in modal when opening existing room unauthed
-      const url = `${IFRAME_BASE_URL}${
-        roomId ? `embed/${roomId}` : "new/embed?authenticate=anonymous"
-      }`;
+      const url = `${routes.baseUrl}${
+        roomId ? `${routes.EMBED_ROOM_BASE}/${roomId}` : routes.NEW_GRAPIC_EMBED
+      }?${routes.QUERY_AUTO_SIGN_IN}=${routes.QUERY_AUTO_SIGN_IN_ANONYMOUS}`;
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
 
@@ -259,7 +253,7 @@ function Widget() {
               fontSize={10}
               opacity={0.5}
               italic
-              href={`${IFRAME_BASE_URL}room/${roomId}`}
+              href={`${routes.baseUrl}${routes.ROOM_BASE}/${roomId}`}
             >
               {`Room: ${roomId}`}
             </GrapicText>
