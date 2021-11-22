@@ -19,8 +19,8 @@ const MAX_WIDGET_WIDTH = 310;
 const UI_MARGIN_FROM_WIDGET = 20;
 
 /**
- * TODO: add analytics
- * TODO: should we use clientId instead of userId?
+ * TODO: add analytics?
+ * TODO: should we add a query param to know that we are in Figma? `?source=figma
  */
 function Widget() {
   const widgetId = widget.useWidgetId();
@@ -29,12 +29,10 @@ function Widget() {
    * Note:  the names of useSyncedState or useSyncedMap can not be changed
    * Note:  default values only set if the client doesn't have a value stored already
    * Read more at: https://www.figma.com/widget-docs/stability-and-updates/
-   *
-   * TODO: think about the naming here before launch because they are not backward comp.
    */
   const [creator, setCreator] = useSyncedState<types.Creator>("creator", {});
   const [roomId, setRoomId] = useSyncedState<string>("roomId", "");
-  const activeUsers = useSyncedMap<types.ActiveUsers>("activeUsers");
+  const figmaUsers = useSyncedMap<types.FigmaUsers>("figmaUsers");
   const snapshots = useSyncedMap<types.Snapshots>("snapshots");
 
   useEffect(() => {
@@ -42,10 +40,12 @@ function Widget() {
       console.log("Message from UI:", message, props.origin);
       switch (message.type) {
         case "notification":
-          figma.notify(`Hello ${figma.currentUser.name}: ${message.message}`);
+          figma.notify(message.message);
           break;
         case "action":
-          figma.closePlugin();
+          if (message.message === "close") {
+            figma.closePlugin();
+          }
           break;
         case "room":
           setRoomId(message.roomId);
@@ -64,6 +64,7 @@ function Widget() {
             imageMessage: message,
             position: positionOnBoard,
             widget,
+            roomId,
           });
           figma.notify(
             `Adding image on board (${new Date(
@@ -80,10 +81,10 @@ function Widget() {
     figma.on("run", () => {
       const { sessionId, ...user } = figma.currentUser;
       setCreator({ id: user.id, name: user.name });
-      activeUsers.set(sessionId.toString(), { ...user, active: true });
+      figmaUsers.set(sessionId.toString(), { ...user, active: true });
 
       figma.once("close", () => {
-        activeUsers.set(sessionId.toString(), { ...user, active: false });
+        figmaUsers.set(sessionId.toString(), { ...user, active: false });
       });
     });
   });
@@ -139,7 +140,7 @@ function Widget() {
     >
       <AutoLayout name="Header" width="fill-parent">
         <Logo />
-        {activeUsers.size > 0 && (
+        {figmaUsers.size > 0 && (
           <AutoLayout
             name="Users"
             width="fill-parent"
@@ -147,7 +148,7 @@ function Widget() {
             verticalAlignItems="center"
             spacing={4}
           >
-            {activeUsers
+            {figmaUsers
               .entries()
               .slice(0, NO_OF_USERS_IN_WIDGET)
               .reverse()
@@ -162,9 +163,9 @@ function Widget() {
                   opacity={user.active ? 1 : 0.5}
                 />
               ))}
-            {activeUsers.size > NO_OF_USERS_IN_WIDGET && (
+            {figmaUsers.size > NO_OF_USERS_IN_WIDGET && (
               <GrapicText>
-                {`+${activeUsers.size - NO_OF_USERS_IN_WIDGET}`}
+                {`+${figmaUsers.size - NO_OF_USERS_IN_WIDGET}`}
               </GrapicText>
             )}
           </AutoLayout>

@@ -1,4 +1,4 @@
-export interface ActiveUsers {
+export interface FigmaUsers {
   id: string;
   name: string;
   color: string;

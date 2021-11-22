@@ -10,10 +10,12 @@ export const createImage = ({
   imageMessage,
   position,
   widget,
+  roomId,
 }: {
   imageMessage: types.FigmaImageMessage;
   position: number;
   widget: WidgetNode;
+  roomId: string;
 }) => {
   const image = figma.createImage(imageMessage.bytes);
   console.log(`Created Figma image (${imageMessage.id})`, image);
@@ -34,6 +36,8 @@ export const createImage = ({
   rectangle.setPluginData("height", imageMessage.height.toString());
   rectangle.setPluginData("createdAtMs", imageMessage.createdAtMs.toString());
   rectangle.setPluginData("url", imageMessage.url);
+  rectangle.setPluginData("roomId", roomId);
+  rectangle.setPluginData("figmaUserId", figma.currentUser.id);
 
   rectangle.resize(imageMessage.width * 0.25, imageMessage.height * 0.25);
 
