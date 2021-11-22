@@ -11,6 +11,4 @@ declare var process: { env?: "production" | "development" } | undefined;
 export const baseUrl =
   process?.env === "production"
     ? "https://app.grapic.co"
-    : // : "https://staging.app.grapic.co";
-      // : "http://localhost:3000";
-      "https://grapic--pr31-feat-figma-plugin-pw7m8tlx.web.app";
+    : "https://staging.app.grapic.co"; // "http://localhost:3000";
