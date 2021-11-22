@@ -20,7 +20,6 @@ const UI_MARGIN_FROM_WIDGET = 20;
 
 /**
  * TODO: add analytics?
- * TODO: should we add a query param to know that we are in Figma? `?source=figma
  */
 function Widget() {
   const widgetId = widget.useWidgetId();
@@ -73,7 +72,7 @@ function Widget() {
           );
           break;
         default:
-          console.error("This message is not supported", message);
+          console.warn("This message is not supported", message);
           break;
       }
     };
@@ -104,7 +103,9 @@ function Widget() {
       }
 
       const url = `${routes.baseUrl}${
-        roomId ? `${routes.EMBED_ROOM_BASE}/${roomId}` : routes.NEW_GRAPIC_EMBED
+        roomId
+          ? `${routes.EMBED_FIGMA_ROOM_BASE}/${roomId}`
+          : routes.NEW_GRAPIC_EMBED_FIGMA
       }?${routes.QUERY_AUTO_SIGN_IN}=${routes.QUERY_AUTO_SIGN_IN_ANONYMOUS}`;
       console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
