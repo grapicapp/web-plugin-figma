@@ -129,7 +129,7 @@ function Widget() {
 
   return (
     <AutoLayout
-      name="Grapic for Figma"
+      name="Grapic for FigJam"
       direction="vertical"
       horizontalAlignItems="start"
       verticalAlignItems="center"
@@ -190,7 +190,7 @@ function Widget() {
           <GrapicText horizontalAlignText="center">
             {"id" in creator && !roomId
               ? "Creating your Grapic..."
-              : "Sketch on paper or whiteboard and\nget it directly into Figma"}
+              : "Sketch on paper or whiteboard and\nget it directly into FigJam"}
           </GrapicText>
         </AutoLayout>
 
@@ -215,7 +215,7 @@ function Widget() {
               italic
               horizontalAlignText="left"
             >
-              {`Take snapshots with your phone \nto make them appear in Figma`}
+              {`Take snapshots with your phone \nto make them appear in FigJam`}
             </GrapicText>
           </AutoLayout>
         )}
