@@ -8,6 +8,12 @@ To start:
 - Develop the app locally with `yarn start` or build once with `yarn build`
 - In the Figma desktop app, open a Figjam file and browse the menu, Widgets -> Development -> Import widget from manifest... and choose the `manifest.json` file in this folder
 
+To release:
+
+- Mark a new version with `yarn version`, push to Github, create a Github release with `gh release create <tag>` (e.g. `gh release create v0.1.0`)
+- Build a production build with `yarn build:production`
+- Publish version in Figma
+
 Links:
 
 - [Figma development documentation](https://www.figma.com/developers)
