@@ -36,7 +36,7 @@ function Widget() {
 
   useEffect(() => {
     figma.ui.onmessage = (message: types.FigmaMessage, props) => {
-      console.log("Message from UI:", message, props.origin);
+      // console.log("Message from UI:", message, props.origin);
       switch (message.type) {
         case "notification":
           figma.notify(message.message);
@@ -52,7 +52,7 @@ function Widget() {
         case "image":
           const { id, createdAtMs, url, width, height } = message;
           if (!!snapshots.get(id)) {
-            console.log(`Image ${id} already on board`);
+            // console.log(`Image ${id} already on board`);
             return;
           }
           const positionOnBoard = snapshots.size;
@@ -72,7 +72,7 @@ function Widget() {
           );
           break;
         default:
-          console.warn("This message is not supported", message);
+          // console.warn("This message is not supported", message);
           break;
       }
     };
@@ -107,7 +107,7 @@ function Widget() {
           ? `${routes.EMBED_FIGMA_ROOM_BASE}/${roomId}`
           : routes.NEW_GRAPIC_EMBED_FIGMA
       }?${routes.QUERY_AUTO_SIGN_IN}=${routes.QUERY_AUTO_SIGN_IN_ANONYMOUS}`;
-      console.log("Opening URL", url);
+      // console.log("Opening URL", url);
       const ui = `<script>window.location.href="${url}"</script>`;
 
       const widget = figma.getNodeById(widgetId) as WidgetNode;

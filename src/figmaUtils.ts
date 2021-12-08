@@ -18,7 +18,7 @@ export const createImage = ({
   roomId: string;
 }) => {
   const image = figma.createImage(imageMessage.bytes);
-  console.log(`Created Figma image (${imageMessage.id})`, image);
+  // console.log(`Created Figma image (${imageMessage.id})`, image);
 
   const rectangle = figma.createRectangle();
   rectangle.name = new Date(imageMessage.createdAtMs).toLocaleString();
@@ -41,22 +41,13 @@ export const createImage = ({
 
   rectangle.resize(imageMessage.width * 0.25, imageMessage.height * 0.25);
 
-  console.log(`Created Figma rectangle (${imageMessage.id})`, rectangle);
-  // for (const paint of rectangle.fills) {
-  //   console.log("paint", paint)
-  // }
+  // console.log(`Created Figma rectangle (${imageMessage.id})`, rectangle);
 
   const imagePaint: ImagePaint = {
     type: "IMAGE",
     imageHash: image.hash,
     scaleMode: "FIT",
   };
-  const newFills = [imagePaint];
-  // const newFills = clone(rectangle.fills) as Paint[];
-  // newFills.shift();
-  // newFills.push(imagePaint);
-  // fills[0].color.r = 0.5
 
-  rectangle.fills = newFills;
-  // console.log(`Filled rectangle (${id}) with image`, rectangle.fills);
+  rectangle.fills = [imagePaint];
 };
