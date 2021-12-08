@@ -13,9 +13,9 @@
     "format:write": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "devDependencies": {
-    "@figma/plugin-typings": "^1.37.0",
+    "@figma/plugin-typings": "^1.39.1",
     "@figma/widget-typings": "^1.0.0",
-    "esbuild": "^0.13.12",
+    "esbuild": "^0.14.2",
     "prettier": "^2.4.1",
     "typescript": "^4.4.2"
   }
