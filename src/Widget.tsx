@@ -151,8 +151,7 @@ function Widget() {
           >
             {figmaUsers
               .entries()
-              .slice(0, NO_OF_USERS_IN_WIDGET)
-              .reverse()
+              .slice(-NO_OF_USERS_IN_WIDGET)
               .map(([sessionId, user]) => (
                 <Image
                   key={sessionId}
