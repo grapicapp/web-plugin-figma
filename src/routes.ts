@@ -6,9 +6,9 @@ export const NEW_GRAPIC_EMBED_FIGMA = `/new/figmaEmbed`;
 export const QUERY_AUTO_SIGN_IN = `authenticate`;
 export const QUERY_AUTO_SIGN_IN_ANONYMOUS = `anonymous`;
 
-declare var process: { env?: "production" | "development" } | undefined;
+declare const process: { env?: "production" | "development" } | undefined;
 
 export const baseUrl =
-  process?.env === "production"
+  process.env === "production"
     ? "https://app.grapic.co"
     : "https://staging.app.grapic.co"; // "http://localhost:3000";

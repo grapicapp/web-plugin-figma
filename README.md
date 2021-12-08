@@ -5,7 +5,7 @@ This is a [Figjam widget](https://www.figma.com/widget-docs/intro/) for Grapic. 
 To start:
 
 - Install dependecies with `yarn`
-- Develop the app locally with `yarn start` or build once with `yarn build`
+- Develop the app locally with `yarn start`
 - In the Figma desktop app, open a Figjam file and browse the menu, Widgets -> Development -> Import widget from manifest... and choose the `manifest.json` file in this folder
 
 To release:
